@@ -180,3 +180,35 @@ func TestMultipartRelated(t *testing.T) {
 		t.Errorf("Content-Type is %s, expected %s", actualType, expectedType)
 	}
 }
+
+func TestFoo(t *testing.T) {
+	// from := "Uber <noreply@uber.com>"
+	// to := "Caleb Mingle <mingle@uber.com>"
+	// subject := "Test Email!"
+
+	// plain := "plain email"
+	// rich := "rich email"
+
+	// mixedMessage := NewMultipartMessage("mixed", "")
+	// mixedMessage.SetHeader("From", from)
+	// mixedMessage.SetHeader("To", to)
+	// mixedMessage.SetHeader("Subject", EncodeWord(subject))
+
+	// altMessage := NewMultipartMessage("alternative", "")
+	// plainPart := NewTextMessage(qprintable.UnixTextEncoding, bytes.NewBufferString(plain))
+	// plainPart.SetHeader("Content-Type", "text/plain")
+	// altMessage.AddPart(plainPart)
+
+	// richPart := NewTextMessage(qprintable.UnixTextEncoding, bytes.NewBufferString(rich))
+	// richPart.SetHeader("Content-Type", "text/html")
+	// altMessage.AddPart(richPart)
+
+	// mixedMessage.AddPart(altMessage)
+
+	// buf := bytes.NewBuffer(nil)
+	// buf.ReadFrom(mixedMessage)
+
+	// fmt.Println(buf.String())
+
+	// t.Errorf("foo")
+}

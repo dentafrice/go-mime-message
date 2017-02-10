@@ -10,7 +10,7 @@ import (
 	"net/http"
 )
 
-type Message struct {
+type message struct {
 	// The transfer encoding for this message. General rules are:
 	//  - message/rfc822, message/partial and message/external-body only accept 7bit
 	//  - multipart/* only accept 7bit, 8bit and binary
@@ -50,8 +50,8 @@ type Message struct {
 
 // New message containing text data. It will be encoded with quoted-printable encoding.
 // You should use this for text/* media types.
-func NewTextMessage(qpEncoding *qprintable.Encoding, body io.Reader) *Message {
-	m := new(Message)
+func NewTextMessage(qpEncoding *qprintable.Encoding, body io.Reader) *message {
+	m := new(message)
 	m.TE = TE_qprintable
 	m.QPEncoding = qpEncoding
 	m.Body = body
@@ -62,8 +62,8 @@ func NewTextMessage(qpEncoding *qprintable.Encoding, body io.Reader) *Message {
 
 // New message containing binary data. It will be encoded with base64 encoding.
 // You should use this for all media types but text/* and multipart/*
-func NewBinaryMessage(body io.Reader) *Message {
-	m := new(Message)
+func NewBinaryMessage(body io.Reader) *message {
+	m := new(message)
 	m.TE = TE_base64
 	m.Body = body
 	m.Headers = make(map[string]string)
@@ -73,7 +73,7 @@ func NewBinaryMessage(body io.Reader) *Message {
 
 // Set an header. val will be directly written ; to escape it, see EncodeWord.
 // Returns self.
-func (m *Message) SetHeader(name, val string) *Message {
+func (m *message) SetHeader(name, val string) *message {
 	m.Headers[http.CanonicalHeaderKey(name)] = val
 	return m
 }
@@ -81,7 +81,7 @@ func (m *Message) SetHeader(name, val string) *Message {
 // Read the MIME representation of the message (headers + body). You can do this
 // only once, since after the first representation this will always return os.EOF.
 // For base64 and quoted-printable encodings, also take care of encoding the body.
-func (m *Message) Read(p []byte) (n int, err error) {
+func (m *message) Read(p []byte) (n int, err error) {
 	// Write message header to buffer on first call
 	// TODO: wrap headers ?
 	if m.buf == nil {

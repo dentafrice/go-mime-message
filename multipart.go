@@ -9,8 +9,8 @@ import (
 
 // A multipart message is a messsage containing other messages
 type MultipartMessage struct {
-	Message
-	Parts    []*Message
+	message
+	Parts    []*message
 	Boundary string
 }
 
@@ -24,7 +24,7 @@ var boundaryGeneratorInit sync.Once
 //
 // You should not modify Body field of the returned structure.
 func NewMultipartMessage(subtype, boundary string) *MultipartMessage {
-	return NewMultipartMessageParams(subtype, boundary, nil) 
+	return NewMultipartMessageParams(subtype, boundary, nil)
 }
 
 // Create a new multipart message with additional parameters.
@@ -77,7 +77,7 @@ func NewMultipartMessageParams(subtype, boundary string, params map[string]strin
 // Add a message to the multipart message. EOL for the part will be inherited
 // from the multipart message.
 // Returns self.
-func (m *MultipartMessage) AddPart(c *Message) *MultipartMessage {
+func (m *MultipartMessage) AddPart(c *message) *MultipartMessage {
 	m.Parts = append(m.Parts, c)
 	c.isMultipartPart = true
 	return m
