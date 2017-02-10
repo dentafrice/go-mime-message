@@ -10,7 +10,7 @@ import (
 // A multipart message is a messsage containing other messages
 type MultipartMessage struct {
 	message
-	Parts    []*message
+	Parts    []Message
 	Boundary string
 }
 
@@ -77,9 +77,9 @@ func NewMultipartMessageParams(subtype, boundary string, params map[string]strin
 // Add a message to the multipart message. EOL for the part will be inherited
 // from the multipart message.
 // Returns self.
-func (m *MultipartMessage) AddPart(c *message) *MultipartMessage {
+func (m *MultipartMessage) AddPart(c Message) *MultipartMessage {
 	m.Parts = append(m.Parts, c)
-	c.isMultipartPart = true
+	c.SetIsMultipartPart(true)
 	return m
 }
 
@@ -100,7 +100,7 @@ func (r *multipartReader) Read(p []byte) (n int, err error) {
 		r.buf.WriteString(r.m.Boundary)
 		r.buf.WriteString(r.m.EOL)
 		if len(r.m.Parts) > 0 {
-			r.m.Parts[r.cur].EOL = r.m.EOL
+			r.m.Parts[r.cur].SetEOL(r.m.EOL)
 		}
 	}
 
@@ -120,7 +120,7 @@ func (r *multipartReader) Read(p []byte) (n int, err error) {
 				r.buf.WriteString(r.m.EOL + "--")
 				r.buf.WriteString(r.m.Boundary)
 				if r.cur < len(r.m.Parts) {
-					r.m.Parts[r.cur].EOL = r.m.EOL
+					r.m.Parts[r.cur].SetEOL(r.m.EOL)
 					r.buf.WriteString(r.m.EOL)
 				} else {
 					r.buf.WriteString("--" + r.m.EOL)

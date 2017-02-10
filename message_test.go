@@ -182,33 +182,41 @@ func TestMultipartRelated(t *testing.T) {
 }
 
 func TestFoo(t *testing.T) {
-	// from := "Uber <noreply@uber.com>"
-	// to := "Caleb Mingle <mingle@uber.com>"
-	// subject := "Test Email!"
+	m := NewMultipartMessage("mixed", "")
+	m.SetHeader("Subject", EncodeWord("昨日の会議"))
+	m.SetHeader("From", EncodeWord("Miller")+" <miller@example.com>")
+	m.SetHeader("To", EncodeWord("田中")+" <tanaka@example.com>")
 
-	// plain := "plain email"
-	// rich := "rich email"
+	attachment := NewBinaryMessage(bytes.NewBufferString(MESSAGE))
+	attachment.SetHeader("Content-Disposition", "attachment; filename=\"foobar.txt\"")
 
-	// mixedMessage := NewMultipartMessage("mixed", "")
-	// mixedMessage.SetHeader("From", from)
-	// mixedMessage.SetHeader("To", to)
-	// mixedMessage.SetHeader("Subject", EncodeWord(subject))
+	alt := NewMultipartMessage("alternative", "")
 
-	// altMessage := NewMultipartMessage("alternative", "")
-	// plainPart := NewTextMessage(qprintable.UnixTextEncoding, bytes.NewBufferString(plain))
-	// plainPart.SetHeader("Content-Type", "text/plain")
-	// altMessage.AddPart(plainPart)
+	plain := NewTextMessage(qprintable.UnixTextEncoding, bytes.NewBufferString(MESSAGE))
+	plain.SetHeader("Content-Type", "text/plain")
 
-	// richPart := NewTextMessage(qprintable.UnixTextEncoding, bytes.NewBufferString(rich))
-	// richPart.SetHeader("Content-Type", "text/html")
-	// altMessage.AddPart(richPart)
+	rel := NewMultipartMessage("related", "")
+	rich := NewTextMessage(qprintable.UnixTextEncoding, bytes.NewBufferString(MESSAGE))
+	rich.SetHeader("Content-Type", "text/html")
 
-	// mixedMessage.AddPart(altMessage)
+	inline := NewBinaryMessage(bytes.NewBufferString(MESSAGE))
+	inline.SetHeader("Content-Type", "application/octet-stream")
 
-	// buf := bytes.NewBuffer(nil)
-	// buf.ReadFrom(mixedMessage)
+	rel.AddPart(rich)
+	rel.AddPart(inline)
 
-	// fmt.Println(buf.String())
+	alt.AddPart(plain)
+	alt.AddPart(rel) // wrapper for rich
 
-	// t.Errorf("foo")
+	m.AddPart(alt)
+	m.AddPart(attachment)
+
+	buf := bytes.NewBuffer(nil)
+	_, err := buf.ReadFrom(m)
+	if err != nil {
+		t.Errorf("Can't read body: %v", err)
+		return
+	}
+
+	fmt.Println(buf.String())
 }

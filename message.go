@@ -10,6 +10,13 @@ import (
 	"net/http"
 )
 
+type Message interface {
+	Read([]byte) (int, error)
+	SetEOL(string)
+	SetHeader(name, val string) *message
+	SetIsMultipartPart(bool)
+}
+
 type message struct {
 	// The transfer encoding for this message. General rules are:
 	//  - message/rfc822, message/partial and message/external-body only accept 7bit
@@ -71,11 +78,19 @@ func NewBinaryMessage(body io.Reader) *message {
 	return m
 }
 
+func (m *message) SetEOL(eol string) {
+	m.EOL = eol
+}
+
 // Set an header. val will be directly written ; to escape it, see EncodeWord.
 // Returns self.
 func (m *message) SetHeader(name, val string) *message {
 	m.Headers[http.CanonicalHeaderKey(name)] = val
 	return m
+}
+
+func (m *message) SetIsMultipartPart(isMultipartPart bool) {
+	m.isMultipartPart = isMultipartPart
 }
 
 // Read the MIME representation of the message (headers + body). You can do this
